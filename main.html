@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JEE 2027 Countdown - Live Wallpaper</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #0a0e27;
+            color: #fff;
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding-bottom: 100px;
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00d4ff, #0099ff, #00d4ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #8899bb;
+            margin-bottom: 3rem;
+            letter-spacing: 2px;
+        }
+
+        .countdown {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .time-block {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 2rem 1.5rem;
+            min-width: 140px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.1);
+        }
+
+        .time-block:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.3);
+        }
+
+        .time-value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #00d4ff;
+            display: block;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .time-label {
+            font-size: 1rem;
+            color: #8899bb;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .motivation {
+            font-size: 1.2rem;
+            color: #aabbdd;
+            max-width: 600px;
+            margin-top: 2.5rem;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .exam-date {
+            position: absolute;
+            bottom: 120px;
+            font-size: 1rem;
+            color: #6677aa;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .countdown {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .time-block {
+                min-width: 100px;
+                padding: 1.5rem 1rem;
+            }
+            
+            .time-value {
+                font-size: 2.5rem;
+            }
+
+            .container {
+                padding-bottom: 80px;
+            }
+
+            .exam-date {
+                bottom: 100px;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .container {
+                padding-bottom: 80px;
+            }
+
+            .title {
+                font-size: 3rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.2rem;
+                margin-bottom: 2rem;
+            }
+
+            .time-block {
+                padding: 1.5rem 1rem;
+            }
+
+            .time-value {
+                font-size: 2.8rem;
+            }
+
+            .motivation {
+                font-size: 1rem;
+                margin-top: 1.5rem;
+            }
+
+            .exam-date {
+                bottom: 100px;
+                font-size: 0.9rem;
+            }
+        }
+
+        .progress-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            opacity: 0.1;
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke: #00d4ff;
+            stroke-width: 2;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    
+    <svg class="progress-ring">
+        <circle cx="400" cy="400" r="350" />
+    </svg>
+
+    <div class="container">
+        <h1 class="title">JEE 2027</h1>
+        <p class="subtitle">Your Future Awaits</p>
+        
+        <div class="countdown">
+            <div class="time-block">
+                <span class="time-value" id="days">000</span>
+                <span class="time-label">Days</span>
+            </div>
+            <div class="time-block">
+                <span class="time-value" id="hours">00</span>
+                <span class="time-label">Hours</span>
+            </div>
+            <div class="time-block">
+                <span class="time-value" id="minutes">00</span>
+                <span class="time-label">Minutes</span>
+            </div>
+            <div class="time-block">
+                <span class="time-value" id="seconds">00</span>
+                <span class="time-label">Seconds</span>
+            </div>
+        </div>
+        
+        <p class="motivation" id="motivation">Every second counts. Stay focused, stay determined.</p>
+        
+        <p class="exam-date">Expected Exam Date: January 2027</p>
+    </div>
+
+    <script>
+        // Particle Animation
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(0, 212, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        const particles = [];
+        for (let i = 0; i < 150; i++) {
+            particles.push(new Particle());
+        }
+
+        // Mouse tracking
+        let mouse = {
+            x: null,
+            y: null,
+            radius: 120
+        };
+
+        canvas.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw subtle mouse glow
+            if (mouse.x && mouse.y) {
+                const gradient = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, mouse.radius);
+                gradient.addColorStop(0, 'rgba(0, 212, 255, 0.1)');
+                gradient.addColorStop(0.5, 'rgba(0, 212, 255, 0.03)');
+                gradient.addColorStop(1, 'rgba(0, 212, 255, 0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            particles.forEach((particle, index) => {
+                // Mouse interaction - attract particles gently
+                if (mouse.x && mouse.y) {
+                    const dx = mouse.x - particle.x;
+                    const dy = mouse.y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < mouse.radius) {
+                        const angle = Math.atan2(dy, dx);
+                        const force = (mouse.radius - distance) / mouse.radius * 0.5;
+                        particle.x += Math.cos(angle) * force;
+                        particle.y += Math.sin(angle) * force;
+                    }
+                }
+
+                particle.update();
+                particle.draw();
+            });
+
+            // Draw connections
+            particles.forEach((p1, i) => {
+                // Connection to mouse
+                if (mouse.x && mouse.y) {
+                    const dx = p1.x - mouse.x;
+                    const dy = p1.y - mouse.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < mouse.radius * 0.8) {
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${0.25 * (1 - distance / (mouse.radius * 0.8))})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+                    }
+                }
+
+                particles.slice(i + 1).forEach(p2 => {
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${0.2 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+
+            requestAnimationFrame(animateParticles);
+        }
+
+        animateParticles();
+
+        // Countdown Timer
+        const targetDate = new Date('January 20, 2027 09:00:00').getTime();
+
+        const motivationalQuotes = [
+            "Every second counts. Stay focused, stay determined.",
+            "Success is the sum of small efforts repeated day in and day out.",
+            "Dream big, work hard, stay focused.",
+            "Your only limit is you. Keep pushing!",
+            "The harder you work, the luckier you get.",
+            "Believe in yourself and all that you are.",
+            "Every expert was once a beginner.",
+            "Success doesn't come from what you do occasionally, but what you do consistently."
+        ];
+
+        let currentQuoteIndex = 0;
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = String(days).padStart(3, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+            if (distance < 0) {
+                document.getElementById('days').textContent = '000';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+                document.querySelector('.motivation').textContent = 'The day has arrived! Give it your best shot!';
+            }
+        }
+
+        // Change motivational quote every 10 seconds
+        setInterval(() => {
+            currentQuoteIndex = (currentQuoteIndex + 1) % motivationalQuotes.length;
+            const motivationElement = document.getElementById('motivation');
+            motivationElement.style.opacity = '0';
+            setTimeout(() => {
+                motivationElement.textContent = motivationalQuotes[currentQuoteIndex];
+                motivationElement.style.opacity = '0.8';
+            }, 500);
+        }, 10000);
+
+        document.getElementById('motivation').style.transition = 'opacity 0.5s ease';
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
