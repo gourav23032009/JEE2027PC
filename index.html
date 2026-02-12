@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JEE 2027 Countdown</title>
+    <title>JEE 2027 Countdown - Live Wallpaper</title>
     <style>
         * {
             margin: 0;
@@ -13,439 +13,415 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle 600px at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-                rgba(255, 255, 255, 0.15), 
-                transparent 40%);
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        /* Animated background particles */
-        .particles {
-            position: absolute;
-            width: 100%;
-            height: 100%;
             overflow: hidden;
-            z-index: 0;
+            background: #0a0e27;
+            color: #fff;
         }
 
-        /* Mouse follower spotlight */
-        .mouse-follower {
-            position: absolute;
-            width: 800px;
-            height: 800px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            transition: left 0.2s ease-out, top 0.2s ease-out;
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
-            mix-blend-mode: screen;
-        }
-
-        .particle {
-            position: absolute;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.1) 70%);
-            border-radius: 50%;
-            animation: float 15s infinite;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            transition: transform 0.3s ease-out;
-        }
-
-        .particle.repel {
-            transform: scale(1.5);
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) translateX(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) translateX(50px);
-                opacity: 0;
-            }
         }
 
         .container {
             position: relative;
-            z-index: 10;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
             text-align: center;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            max-width: 600px;
-            width: 90%;
-            animation: fadeIn 1s ease-out;
-            transition: all 0.3s ease;
+            padding-bottom: 100px;
         }
 
-        .container:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        h1 {
-            font-size: 3.5rem;
+        .title {
+            font-size: 4rem;
             font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-            letter-spacing: 2px;
-            transition: all 0.3s ease;
-            cursor: default;
-        }
-
-        h1:hover {
-            transform: scale(1.1);
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 50px;
-            font-weight: 300;
-            letter-spacing: 1px;
-        }
-
-        .timer-container {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 40px 30px;
-            border-radius: 20px;
-            margin-bottom: 40px;
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .timer-container:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.4), inset 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .timer-label {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.8);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .timer {
-            font-size: 5rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #fff, #ffd700, #fff);
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00d4ff, #0099ff, #00d4ff);
             background-size: 200% 200%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: textShine 3s ease-in-out infinite;
-            font-variant-numeric: tabular-nums;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-            line-height: 1;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
+            animation: gradientShift 3s ease infinite;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
         }
 
-        @keyframes textShine {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
-        .timer-container:hover .timer {
-            transform: scale(1.1);
-            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6));
-        }
-
-        .seconds-label {
+        .subtitle {
             font-size: 1.5rem;
-            color: rgba(255, 255, 255, 0.9);
+            color: #8899bb;
+            margin-bottom: 3rem;
+            letter-spacing: 2px;
+        }
+
+        .countdown {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .time-block {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 2rem 1.5rem;
+            min-width: 140px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.1);
+        }
+
+        .time-block:hover {
+            transform: translateY(-10px);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 12px 40px rgba(0, 212, 255, 0.3);
+        }
+
+        .time-value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #00d4ff;
+            display: block;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .time-label {
+            font-size: 1rem;
+            color: #8899bb;
             text-transform: uppercase;
             letter-spacing: 2px;
-            font-weight: 500;
         }
 
         .motivation {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.95);
-            line-height: 1.6;
-            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: #aabbdd;
+            max-width: 600px;
+            margin-top: 2.5rem;
             font-style: italic;
-            font-weight: 300;
+            opacity: 0.8;
         }
 
         .exam-date {
+            position: absolute;
+            bottom: 120px;
             font-size: 1rem;
-            color: rgba(255, 255, 255, 0.95);
-            font-weight: 400;
-            padding: 12px 25px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 25px;
-            display: inline-block;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-            cursor: pointer;
+            color: #6677aa;
+            letter-spacing: 1px;
         }
 
-        .exam-date:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            margin-top: 30px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .progress-bar:hover {
-            height: 12px;
-            box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 50%, #4facfe 100%);
-            background-size: 200% 100%;
-            animation: shimmer 2s linear infinite;
-            border-radius: 10px;
-            transition: width 1s ease-out;
-            box-shadow: 0 0 15px rgba(79, 172, 254, 0.7);
-        }
-
-        @keyframes shimmer {
-            0% {
-                background-position: -200% 0;
-            }
-            100% {
-                background-position: 200% 0;
-            }
-        }
-
-        /* Responsive design */
         @media (max-width: 768px) {
-            h1 {
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .countdown {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .time-block {
+                min-width: 100px;
+                padding: 1.5rem 1rem;
+            }
+            
+            .time-value {
                 font-size: 2.5rem;
             }
 
-            .timer {
-                font-size: 3.5rem;
-            }
-
-            .subtitle {
-                font-size: 1rem;
-            }
-
             .container {
-                padding: 30px 20px;
+                padding-bottom: 80px;
+            }
+
+            .exam-date {
+                bottom: 100px;
             }
         }
 
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 2rem;
+        @media (max-height: 700px) {
+            .container {
+                padding-bottom: 80px;
             }
 
-            .timer {
+            .title {
+                font-size: 3rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.2rem;
+                margin-bottom: 2rem;
+            }
+
+            .time-block {
+                padding: 1.5rem 1rem;
+            }
+
+            .time-value {
                 font-size: 2.8rem;
             }
 
-            .timer-container {
-                padding: 30px 20px;
+            .motivation {
+                font-size: 1rem;
+                margin-top: 1.5rem;
             }
+
+            .exam-date {
+                bottom: 100px;
+                font-size: 0.9rem;
+            }
+        }
+
+        .progress-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            opacity: 0.1;
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke: #00d4ff;
+            stroke-width: 2;
         }
     </style>
 </head>
 <body>
-    <!-- Animated particles background -->
-    <div class="particles" id="particles"></div>
+    <canvas id="canvas"></canvas>
     
-    <!-- Mouse follower spotlight -->
-    <div class="mouse-follower" id="mouseFollower"></div>
+    <svg class="progress-ring">
+        <circle cx="400" cy="400" r="350" />
+    </svg>
 
     <div class="container">
-        <h1>JEE 2027</h1>
+        <h1 class="title">JEE 2027</h1>
         <p class="subtitle">Your Future Awaits</p>
-
-        <div class="timer-container">
-            <div class="timer-label">Time Remaining</div>
-            <div class="timer" id="timer">0</div>
-            <div class="seconds-label">Seconds</div>
+        
+        <div class="countdown">
+            <div class="time-block">
+                <span class="time-value" id="days">000</span>
+                <span class="time-label">Days</span>
+            </div>
+            <div class="time-block">
+                <span class="time-value" id="hours">00</span>
+                <span class="time-label">Hours</span>
+            </div>
+            <div class="time-block">
+                <span class="time-value" id="minutes">00</span>
+                <span class="time-label">Minutes</span>
+            </div>
+            <div class="time-block">
+                <span class="time-value" id="seconds">00</span>
+                <span class="time-label">Seconds</span>
+            </div>
         </div>
-
-        <p class="motivation">Every second counts. Stay focused, stay determined.</p>
-
-        <div class="exam-date">Expected Exam Date: January 2027</div>
-
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressBar"></div>
-        </div>
+        
+        <p class="motivation" id="motivation">Every second counts. Stay focused, stay determined.</p>
+        
+        <p class="exam-date">Expected Exam Date: January 2027</p>
     </div>
 
     <script>
-        // Mouse tracking for interactive background
-        let mouseX = 0;
-        let mouseY = 0;
-        let particles = [];
+        // Particle Animation
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-            // Update CSS variables for gradient effect
-            const xPercent = (e.clientX / window.innerWidth) * 100;
-            const yPercent = (e.clientY / window.innerHeight) * 100;
-            document.body.style.setProperty('--mouse-x', xPercent + '%');
-            document.body.style.setProperty('--mouse-y', yPercent + '%');
-
-            // Update mouse follower position
-            const follower = document.getElementById('mouseFollower');
-            follower.style.left = e.clientX + 'px';
-            follower.style.top = e.clientY + 'px';
-
-            // Repel particles near cursor
-            particles.forEach(particleData => {
-                const particle = particleData.element;
-                const rect = particle.getBoundingClientRect();
-                const particleX = rect.left + rect.width / 2;
-                const particleY = rect.top + rect.height / 2;
-
-                const deltaX = particleX - e.clientX;
-                const deltaY = particleY - e.clientY;
-                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-                if (distance < 150) {
-                    const angle = Math.atan2(deltaY, deltaX);
-                    const force = (150 - distance) / 150;
-                    const moveX = Math.cos(angle) * force * 50;
-                    const moveY = Math.sin(angle) * force * 50;
-                    
-                    particle.style.transform = `translate(${moveX}px, ${moveY}px) scale(${1 + force * 0.5})`;
-                    particle.style.opacity = 0.8 + force * 0.2;
-                } else {
-                    particle.style.transform = 'translate(0, 0) scale(1)';
-                    particle.style.opacity = 1;
-                }
-            });
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         });
 
-        // Create floating particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = 50; // Increased from 30
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
 
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                const size = Math.random() * 80 + 30; // Larger particles
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 15 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                
-                particlesContainer.appendChild(particle);
-                particles.push({ element: particle, size: size });
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(0, 212, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
 
-        // Countdown timer
-        function updateCountdown() {
-            // Set target date to January 20, 2027 (approximate JEE Main date)
-            const targetDate = new Date('2027-01-20T09:00:00').getTime();
-            const startDate = new Date('2024-01-20T09:00:00').getTime(); // Approximate start point
+        const particles = [];
+        for (let i = 0; i < 150; i++) {
+            particles.push(new Particle());
+        }
+
+        // Mouse tracking
+        let mouse = {
+            x: null,
+            y: null,
+            radius: 120
+        };
+
+        canvas.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            function update() {
-                const now = new Date().getTime();
-                const distance = targetDate - now;
+            // Draw subtle mouse glow
+            if (mouse.x && mouse.y) {
+                const gradient = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, mouse.radius);
+                gradient.addColorStop(0, 'rgba(0, 212, 255, 0.1)');
+                gradient.addColorStop(0.5, 'rgba(0, 212, 255, 0.03)');
+                gradient.addColorStop(1, 'rgba(0, 212, 255, 0)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
 
-                // Calculate total seconds remaining
-                const totalSeconds = Math.floor(distance / 1000);
-
-                // Update timer display
-                const timerElement = document.getElementById('timer');
-                if (totalSeconds > 0) {
-                    timerElement.textContent = totalSeconds.toLocaleString();
-                } else {
-                    timerElement.textContent = '0';
+            particles.forEach((particle, index) => {
+                // Mouse interaction - attract particles gently
+                if (mouse.x && mouse.y) {
+                    const dx = mouse.x - particle.x;
+                    const dy = mouse.y - particle.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < mouse.radius) {
+                        const angle = Math.atan2(dy, dx);
+                        const force = (mouse.radius - distance) / mouse.radius * 0.5;
+                        particle.x += Math.cos(angle) * force;
+                        particle.y += Math.sin(angle) * force;
+                    }
                 }
 
-                // Update progress bar
-                const totalDuration = targetDate - startDate;
-                const elapsed = now - startDate;
-                const progress = Math.min((elapsed / totalDuration) * 100, 100);
-                document.getElementById('progressBar').style.width = progress + '%';
-            }
+                particle.update();
+                particle.draw();
+            });
 
-            update();
-            setInterval(update, 1000);
+            // Draw connections
+            particles.forEach((p1, i) => {
+                // Connection to mouse
+                if (mouse.x && mouse.y) {
+                    const dx = p1.x - mouse.x;
+                    const dy = p1.y - mouse.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < mouse.radius * 0.8) {
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${0.25 * (1 - distance / (mouse.radius * 0.8))})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+                    }
+                }
+
+                particles.slice(i + 1).forEach(p2 => {
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${0.2 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+
+            requestAnimationFrame(animateParticles);
         }
 
-        // Initialize
-        createParticles();
+        animateParticles();
+
+        // Countdown Timer
+        const targetDate = new Date('January 20, 2027 09:00:00').getTime();
+
+        const motivationalQuotes = [
+            "Every second counts. Stay focused, stay determined.",
+            "Success is the sum of small efforts repeated day in and day out.",
+            "Dream big, work hard, stay focused.",
+            "Your only limit is you. Keep pushing!",
+            "The harder you work, the luckier you get.",
+            "Believe in yourself and all that you are.",
+            "Every expert was once a beginner.",
+            "Success doesn't come from what you do occasionally, but what you do consistently."
+        ];
+
+        let currentQuoteIndex = 0;
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = String(days).padStart(3, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+            if (distance < 0) {
+                document.getElementById('days').textContent = '000';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+                document.querySelector('.motivation').textContent = 'The day has arrived! Give it your best shot!';
+            }
+        }
+
+        // Change motivational quote every 10 seconds
+        setInterval(() => {
+            currentQuoteIndex = (currentQuoteIndex + 1) % motivationalQuotes.length;
+            const motivationElement = document.getElementById('motivation');
+            motivationElement.style.opacity = '0';
+            setTimeout(() => {
+                motivationElement.textContent = motivationalQuotes[currentQuoteIndex];
+                motivationElement.style.opacity = '0.8';
+            }, 500);
+        }, 10000);
+
+        document.getElementById('motivation').style.transition = 'opacity 0.5s ease';
+
         updateCountdown();
+        setInterval(updateCountdown, 1000);
     </script>
 </body>
 </html>
